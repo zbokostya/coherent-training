@@ -8,8 +8,8 @@ def arg_parser():
     parser.add_argument('-f', '--file', required=True, type=str, help="Name of file <parquet|csv> to convert")
     parser.add_argument('-o', '--outfile', default='', type=str, help="Name of file to output")
     parser.add_argument('-i', '--index', action="store_true", help="Use index or not. Default = false")
-    parser.add_argument('-c', '--compression', default='none', choices=['none', 'snappy', 'gzip'],
-                        help="Compression to use [none, snappy, gzip]. Default = none")
+    parser.add_argument('-c', '--compression', default='none', choices=['none', 'snappy', 'gzip', 'brotli'],
+                        help="Compression to use [none, snappy, gzip, 'brotli']. Default = none")
 
     required_group = parser.add_mutually_exclusive_group(required=True)
     required_group.add_argument('-tocsv', '--parquet2csv', action="store_true", help="Convert parquet to csv")

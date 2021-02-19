@@ -14,20 +14,20 @@ pandas
 ### Execution
 
 Program runs using command line or terminal  
-**Required**
 
+**Required**
 * -f <parquet|csv> Name of file <parquet|csv> to convert
-* -o Name of file to output
 * -s Print parquet schema
 * -tocsv Convert parquet to csv
 * -topar Convert csv to parquet
 
 **Optional**
 
+* -o Name of file to output
 * -i Use index or not. Default false
-* -c Compression to use [none, snappy, gzip]. Default none
+* -c Compression to use [none, snappy, gzip, brotli]. Default none
 * -h To get help
 
-`python console_handler.py -f data/dataset.csv -o converted -topar -c gzip`  
+`python main.py -f data/dataset.csv -o data/converted -topar -c gzip`  
 `python main.py -f data/dataset.parquet -tocsv`  
 `python main.py -f data/dataset.parquet -s`
