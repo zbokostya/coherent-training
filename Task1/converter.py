@@ -2,13 +2,13 @@ import pandas as pd
 import pyarrow as pa
 import logging
 
-logging.basicConfig(format="", level=logging.DEBUG)
-
 
 class Converter:
-    def __init__(self, index, compression):
+    def __init__(self, index, compression, quite):
         self.index = index
         self.compression = compression
+
+        logging.basicConfig(format="", level=quite)
 
     def write_csv_file(self, file, out):
         try:
@@ -43,7 +43,7 @@ class Converter:
     def write_parquet_schema(self, file):
         try:
             df = pd.read_parquet(file)
-            print(df)
+            return df
         except FileNotFoundError:
             logging.error("Failed! No such file " + file)
         except OSError:

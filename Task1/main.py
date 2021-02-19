@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from converter import Converter
 
@@ -10,6 +11,7 @@ def arg_parser():
     parser.add_argument('-i', '--index', action="store_true", help="Use index or not. Default = false")
     parser.add_argument('-c', '--compression', default='none', choices=['none', 'snappy', 'gzip', 'brotli'],
                         help="Compression to use [none, snappy, gzip, 'brotli']. Default = none")
+    parser.add_argument('-q', '--quiet', action="store_true", help="Print logs or not. Default = false")
 
     required_group = parser.add_mutually_exclusive_group(required=True)
     required_group.add_argument('-tocsv', '--parquet2csv', action="store_true", help="Convert parquet to csv")
@@ -17,9 +19,15 @@ def arg_parser():
     required_group.add_argument('-s', '--schema', action="store_true", help="Print parquet schema")
     args = parser.parse_args()
 
+    if args.quiet:
+        log_level = logging.CRITICAL
+    else:
+        log_level = logging.DEBUG
+
     convert = Converter(
         index=args.index,
-        compression=args.compression
+        compression=args.compression,
+        quite=log_level
     )
 
     if args.parquet2csv:
@@ -27,7 +35,7 @@ def arg_parser():
     elif args.csv2parquet:
         convert.write_parquet_file(file=args.file, out=args.outfile)
     elif args.schema:
-        convert.write_parquet_schema(file=args.file)
+        print(convert.write_parquet_schema(file=args.file))
 
 
 if __name__ == '__main__':

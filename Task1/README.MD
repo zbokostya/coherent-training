@@ -16,6 +16,7 @@ pandas
 Program runs using command line or terminal  
 
 **Required**
+
 * -f <parquet|csv> Name of file <parquet|csv> to convert
 * -s Print parquet schema
 * -tocsv Convert parquet to csv
@@ -23,6 +24,7 @@ Program runs using command line or terminal
 
 **Optional**
 
+* -q Use logs or not. Default false
 * -o Name of file to output
 * -i Use index or not. Default false
 * -c Compression to use [none, snappy, gzip, brotli]. Default none
