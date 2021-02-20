@@ -1,50 +1,53 @@
 import pandas as pd
 import pyarrow as pa
+import pyarrow.parquet as pq
 import logging
 
 
 class Converter:
-    def __init__(self, index, compression, quite):
-        self.index = index
+    def __init__(self, compression, quite):
         self.compression = compression
 
         logging.basicConfig(format="", level=quite)
 
-    def write_csv_file(self, file, out):
+    def convert_parquet_to_csv_file(self, in_file, out_file):
         try:
-            df = pd.read_parquet(file)
-            if out == '':
-                out = file.rsplit('.', 1)[0]
+            df = pd.read_parquet(in_file)
+            if out_file == '':
+                out_file = in_file.rsplit('.', 1)[:-1]
             else:
-                out = out.rsplit('.', 1)[0]
-            out = out + '.csv'
-            df.to_csv(out, index=self.index)
+                out_file = out_file.rsplit('.', 1)[:-1]
+            out_file = out_file + '.csv'
+            df.to_csv(out_file, index=False)
         except FileNotFoundError:
-            logging.error("Failed! No such file " + file)
+            logging.error("Failed! No such file " + in_file)
         else:
-            logging.info("Success! File " + out)
+            logging.info("Success! File " + out_file)
 
-    def write_parquet_file(self, file, out):
+    def convert_csv_to_parquet_file(self, in_file, out_file):
         try:
-            df = pd.read_csv(file)
-            if out == '':
-                out = file.rsplit('.', 1)[0]
+            df = pd.read_csv(in_file)
+            if out_file == '':
+                out_file = in_file.rsplit('.', 1)[:-1]
             else:
-                out = out.rsplit('.', 1)[0]
-            out = out + '.parquet'
-            df.to_parquet(out, compression=self.compression)
+                out_file = out_file.rsplit('.', 1)[:-1]
+            out_file = out_file + '.parquet'
+            df.to_parquet(out_file, compression=self.compression)
         except FileNotFoundError:
-            logging.error("Failed! No such file " + file)
+            logging.error("Failed! No such file " + in_file)
         except pa.lib.ArrowException:
-            logging.error("Failed! No such compression " + self.compression + " Only [none, snappy, gzip] supports")
+            logging.error("Failed! No such compression " + self.compression)
         else:
-            logging.info("Success! File " + out)
+            logging.info("Success! File " + out_file)
 
-    def write_parquet_schema(self, file):
+    def print_parquet_schema(self, in_file):
         try:
-            df = pd.read_parquet(file)
-            return df
+            schema = pq.read_schema(in_file, memory_map=True)
+            schema = pd.DataFrame(
+                ({"column": name, "pa_dtype": str(pa_dtype)} for name, pa_dtype in zip(schema.names, schema.types)))
+            schema = schema.reindex(columns=["column", "pa_dtype"], fill_value=pd.NA)
+            print(schema)
         except FileNotFoundError:
-            logging.error("Failed! No such file " + file)
+            logging.error("Failed! No such file " + in_file)
         except OSError:
             logging.error("Failed! Not a parquet file")

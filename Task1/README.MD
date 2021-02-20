@@ -15,7 +15,11 @@ pandas
 
 Program runs using command line or terminal  
 
-**Required**
+**Required**  
+
+**main.py**  
+
+`usage: main.py [-h] -f FILE [-o OUTFILE] [-i] [-c {none,snappy,gzip,brotli}] [-q] (-tocsv | -topar | -s)`
 
 * -f <parquet|csv> Name of file <parquet|csv> to convert
 * -s Print parquet schema

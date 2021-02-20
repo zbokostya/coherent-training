@@ -4,13 +4,13 @@ import logging
 from converter import Converter
 
 
-def arg_parser():
+def main():
     parser = argparse.ArgumentParser(description='Convert csv and parquet formats', )
     parser.add_argument('-f', '--file', required=True, type=str, help="Name of file <parquet|csv> to convert")
     parser.add_argument('-o', '--outfile', default='', type=str, help="Name of file to output")
-    parser.add_argument('-i', '--index', action="store_true", help="Use index or not. Default = false")
+
     parser.add_argument('-c', '--compression', default='none', choices=['none', 'snappy', 'gzip', 'brotli'],
-                        help="Compression to use [none, snappy, gzip, 'brotli']. Default = none")
+                        help="Compression to use. Default = none")
     parser.add_argument('-q', '--quiet', action="store_true", help="Print logs or not. Default = false")
 
     required_group = parser.add_mutually_exclusive_group(required=True)
@@ -25,18 +25,17 @@ def arg_parser():
         log_level = logging.DEBUG
 
     convert = Converter(
-        index=args.index,
         compression=args.compression,
         quite=log_level
     )
 
     if args.parquet2csv:
-        convert.write_csv_file(file=args.file, out=args.outfile)
+        convert.convert_parquet_to_csv_file(in_file=args.file, out_file=args.outfile)
     elif args.csv2parquet:
-        convert.write_parquet_file(file=args.file, out=args.outfile)
+        convert.convert_csv_to_parquet_file(in_file=args.file, out_file=args.outfile)
     elif args.schema:
-        print(convert.write_parquet_schema(file=args.file))
+        print(convert.print_parquet_schema(in_file=args.file))
 
 
 if __name__ == '__main__':
-    arg_parser()
+    main()
