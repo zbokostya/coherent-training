@@ -21,6 +21,8 @@ class Converter:
             df.to_csv(out_file, index=False)
         except FileNotFoundError:
             logging.error("Failed! No such file " + in_file)
+        except Exception:
+            logging.error("Unknown error")
         else:
             logging.info("Success! File " + out_file)
 
@@ -37,6 +39,8 @@ class Converter:
             logging.error("Failed! No such file " + in_file)
         except pa.lib.ArrowException:
             logging.error("Failed! No such compression " + self.compression)
+        except Exception:
+            logging.error("Unknown error")
         else:
             logging.info("Success! File " + out_file)
 
@@ -49,5 +53,7 @@ class Converter:
             print(schema)
         except FileNotFoundError:
             logging.error("Failed! No such file " + in_file)
-        except OSError:
+        except pa.lib.ArrowInvalid:
             logging.error("Failed! Not a parquet file")
+        except Exception:
+            logging.error("Unknown error")

@@ -34,7 +34,7 @@ def main():
     elif args.csv2parquet:
         convert.convert_csv_to_parquet_file(in_file=args.file, out_file=args.outfile)
     elif args.schema:
-        print(convert.print_parquet_schema(in_file=args.file))
+        convert.print_parquet_schema(in_file=args.file)
 
 
 if __name__ == '__main__':
