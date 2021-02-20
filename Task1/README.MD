@@ -19,7 +19,8 @@ Program runs using command line or terminal
 
 **main.py**  
 
-`usage: main.py [-h] -f FILE [-o OUTFILE] [-i] [-c {none,snappy,gzip,brotli}] [-q] (-tocsv | -topar | -s)`
+`usage: main.py [-h] -f FILE [-o OUTFILE] [-c {none,snappy,gzip,brotli}] [-q] (-tocsv | -topar | -s)`
+
 
 * -f <parquet|csv> Name of file <parquet|csv> to convert
 * -s Print parquet schema
@@ -30,7 +31,6 @@ Program runs using command line or terminal
 
 * -q Use logs or not. Default false
 * -o Name of file to output
-* -i Use index or not. Default false
 * -c Compression to use [none, snappy, gzip, brotli]. Default none
 * -h To get help
 
