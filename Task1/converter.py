@@ -14,9 +14,9 @@ class Converter:
         try:
             df = pd.read_parquet(in_file)
             if out_file == '':
-                out_file = in_file.rsplit('.', 1)[:-1]
+                out_file = '.'.join(in_file.rsplit('.', 1)[:-1])
             else:
-                out_file = out_file.rsplit('.', 1)[:-1]
+                out_file = '.'.join(out_file.rsplit('.', 1)[:-1])
             out_file = out_file + '.csv'
             df.to_csv(out_file, index=False)
         except FileNotFoundError:
@@ -28,9 +28,9 @@ class Converter:
         try:
             df = pd.read_csv(in_file)
             if out_file == '':
-                out_file = in_file.rsplit('.', 1)[:-1]
+                out_file = '.'.join(in_file.rsplit('.', 1)[:-1])
             else:
-                out_file = out_file.rsplit('.', 1)[:-1]
+                out_file = '.'.join(out_file.rsplit('.', 1)[:-1])
             out_file = out_file + '.parquet'
             df.to_parquet(out_file, compression=self.compression)
         except FileNotFoundError:
