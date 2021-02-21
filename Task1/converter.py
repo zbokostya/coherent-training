@@ -5,10 +5,10 @@ import logging
 
 
 class Converter:
-    def __init__(self, compression, quite):
+    def __init__(self, compression=None, log_level=logging.CRITICAL):
         self.compression = compression
 
-        logging.basicConfig(format="", level=quite)
+        logging.basicConfig(format="", level=log_level)
 
     def convert_parquet_to_csv_file(self, in_file, out_file):
         try:

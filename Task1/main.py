@@ -4,7 +4,7 @@ import logging
 from converter import Converter
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser(description='Convert csv and parquet formats', )
     parser.add_argument('-f', '--file', required=True, type=str, help="Name of file <parquet|csv> to convert")
     parser.add_argument('-o', '--outfile', default='', type=str, help="Name of file to output")
@@ -17,7 +17,11 @@ def main():
     required_group.add_argument('-tocsv', '--parquet2csv', action="store_true", help="Convert parquet to csv")
     required_group.add_argument('-topar', '--csv2parquet', action="store_true", help="Convert csv to parquet")
     required_group.add_argument('-s', '--schema', action="store_true", help="Print parquet schema")
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    args = arg_parser()
 
     if args.quiet:
         log_level = logging.CRITICAL
@@ -26,7 +30,7 @@ def main():
 
     convert = Converter(
         compression=args.compression,
-        quite=log_level
+        log_level=log_level
     )
 
     if args.parquet2csv:
