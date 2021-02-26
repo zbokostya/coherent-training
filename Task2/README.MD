@@ -14,12 +14,14 @@ Program runs using command line or terminal
 
 **Optional**
 
-```  -h, --help            show this help message and exit
-  -N N                  Number of max rating films
-  -genres GENRES        Filter by genres
-  -year_from YEAR_FROM  Number of min year to filter
-  -year_to YEAR_TO      Number of max year to filter
-  -regexp REGEXP        Regular expression to filter
-  ```
+| Argument | Help |
+| ------------------------ | ----------------------------------- |
+|  -h, --help            | show this help message and exit |
+|  -N N                  | number of max rating films |
+|  -genres GENRES        | filter by genres |
+|  -year_from YEAR_FROM  | number of min year to filter |
+|  -year_to YEAR_TO      | number of max year to filter |
+|  -regexp REGEXP        | regular expression to filter |
+
 
 `python main.py -N 10 -year_to 2007 -year_from 1900 -regexp Waiting -genres Drama`

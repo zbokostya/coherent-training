@@ -67,8 +67,7 @@ def parse_films_genres(films_arg):
 def create_csv_like_format(top_ratings, count_n):
     result = 'genre,title,year,rating\n'
     for el in top_ratings[:count_n]:
-        result = result + el[1].genre + ',' + el[1].name + ',' + str(el[1].year) \
-                 + ',' + str("{:.2f}".format(el[1].get_rating())) + '\n'
+        result = '{}{},{},{},{:.2f}\n'.format(result, el[1].genre, el[1].name, el[1].year, el[1].get_rating())
     return result
 
 
