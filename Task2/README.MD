@@ -10,7 +10,7 @@ Program runs using command line or terminal
 
 **main.py**  
 
-`usage: main.py [-h] [-N N] [-genres GENRES] [-year_from YEAR_FROM] [-year_to YEAR_TO] [-regexp REGEXP]`
+`usage: main.py [-h] [-N N] [-genres GENRES] [-year_from YEAR_FROM] [-year_to YEAR_TO] [-regexp REGEXP] [-to_csv]`
 
 **Optional**
 
@@ -22,7 +22,8 @@ Program runs using command line or terminal
 |  -year_from YEAR_FROM  | number of min year to filter |
 |  -year_to YEAR_TO      | number of max year to filter |
 |  -regexp REGEXP        | regular expression to filter |
-|  -to_csv               | Print result to csv |
+|  -to_csv               | print result to csv |
 
-
-`python main.py -N 10 -year_to 2007 -year_from 1900 -regexp Waiting -genres Drama`
+``` sh
+python main.py -N 10 -year_to 2007 -year_from 1900 -regexp "Life" -genres "Drama|Comedy"
+```
