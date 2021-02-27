@@ -1,9 +1,10 @@
 import csv
 import argparse
 import logging
+import re
 from film import Film
 
-DATA_DIR = 'data/ml-25m/'
+DATA_DIR = 'data/ml-latest-small/'
 
 logging.basicConfig(format="", level=logging.DEBUG)
 
@@ -16,7 +17,7 @@ def get_films_id_by_filters(genres, year_from, year_to, regexp):
             for row in films_csv:
                 for genre in genres:
                     parse_year = year_parse(row[1])
-                    if genre in row[2] and year_from <= parse_year[0] <= year_to and regexp in row[1]:
+                    if genre in row[2] and year_from <= parse_year[0] <= year_to and re.search(regexp, row[1]):
                         films[row[0]] = Film(row[2], row[1][0:parse_year[1] - 1], parse_year[0])
                         break
         return films
@@ -57,6 +58,7 @@ def arg_parse():
     parser.add_argument('-year_from', default=-1, type=int, help='Number of min year to filter')
     parser.add_argument('-year_to', default=9999, type=int, help='Number of max year to filter')
     parser.add_argument('-regexp', default='', type=str, help='Regular expression to filter')
+    parser.add_argument('-to_csv', action="store_false", help="Print result to csv")
     return parser.parse_args()
 
 
@@ -64,19 +66,29 @@ def parse_films_genres(films_arg):
     return films_arg.split(sep='|')
 
 
-def create_csv_like_format(top_ratings, count_n):
-    result = 'genre,title,year,rating\n'
+def print_csv_like_format(top_ratings, count_n):
+    print('genre,title,year,rating')
     for el in top_ratings[:count_n]:
-        result = '{}{},{},{},{:.2f}\n'.format(result, el[1].genre, el[1].name, el[1].year, el[1].get_rating())
-    return result
+        print(el[1])
+
+
+def out_csv(top_ratings, count_n):
+    with open(DATA_DIR + 'top.csv', 'w', newline='') as result:
+        writer = csv.writer(result, delimiter=',',
+                            quotechar='"')
+        writer.writerow(['genre', 'title', 'year', 'rating'])
+        for el in top_ratings[:count_n]:
+            writer.writerow([el[1].genre, el[1].name, el[1].year, el[1].get_rating()])
 
 
 def main(parsed_args):
     genres = parse_films_genres(parsed_args.genres)
     films = get_films_id_by_filters(genres, parsed_args.year_from, parsed_args.year_to, parsed_args.regexp)
     ratings = count_ratings(films)
-    result = create_csv_like_format(ratings, parsed_args.N)
-    print(result)
+    if args.to_csv:
+        print_csv_like_format(ratings, parsed_args.N)
+    else:
+        out_csv(ratings, parsed_args.N)
 
 
 if __name__ == '__main__':

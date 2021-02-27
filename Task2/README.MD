@@ -22,6 +22,7 @@ Program runs using command line or terminal
 |  -year_from YEAR_FROM  | number of min year to filter |
 |  -year_to YEAR_TO      | number of max year to filter |
 |  -regexp REGEXP        | regular expression to filter |
+|  -to_csv               | Print result to csv |
 
 
 `python main.py -N 10 -year_to 2007 -year_from 1900 -regexp Waiting -genres Drama`

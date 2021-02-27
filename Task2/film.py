@@ -8,3 +8,6 @@ class Film:
 
     def get_rating(self):
         return self.rating_sum / self.rating_count if self.rating_count else 0
+
+    def __str__(self):
+        return '{},"{}",{},{:.2f}'.format(self.genre, self.name, self.year, self.get_rating())
