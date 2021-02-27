@@ -17,10 +17,7 @@ def main(parsed_args):
     genres = processor.parse_films_genres(parsed_args.genres)
     films = processor.get_films_id_by_filters(genres, parsed_args.year_from, parsed_args.year_to, parsed_args.regexp)
     ratings = processor.count_ratings(films)
-    if args.to_csv:
-        processor.print_csv_like_format(ratings, parsed_args.N)
-    else:
-        processor.out_csv(ratings, parsed_args.N)
+    processor.print_csv_like_format(ratings, parsed_args.N)
 
 
 if __name__ == '__main__':

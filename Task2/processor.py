@@ -56,14 +56,5 @@ def print_csv_like_format(top_ratings, count_n):
         print(film)
 
 
-def out_csv(top_ratings, count_n):
-    with open(DATA_DIR + 'top.csv', 'w', newline='') as result:
-        writer = csv.writer(result, delimiter=',',
-                            quotechar='"')
-        writer.writerow(['genre', 'title', 'year', 'rating'])
-        for el in top_ratings[:count_n]:
-            writer.writerow([el[1].genre, el[1].name, el[1].year, el[1].get_rating()])
-
-
 def parse_films_genres(films_arg):
     return films_arg.split(sep='|')
