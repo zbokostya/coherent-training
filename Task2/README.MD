@@ -12,7 +12,7 @@ Program runs using command line or terminal
 
 **main.py**  
 
-`usage: main.py [-h] [-N N] [-genres GENRES] [-year_from YEAR_FROM] [-year_to YEAR_TO] [-regexp REGEXP] [-to_csv]`
+`usage: main.py [-h] [-N N] [-genres GENRES] [-year_from YEAR_FROM] [-year_to YEAR_TO] [-regexp REGEXP]`
 
 **Optional**
 
