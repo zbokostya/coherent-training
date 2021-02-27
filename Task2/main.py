@@ -15,10 +15,11 @@ def get_films_id_by_filters(genres, year_from, year_to, regexp):
             films_csv = csv.reader(movies, delimiter=',', quotechar='"')
             films = dict()
             for row in films_csv:
+                film_id, film_name, film_genres = row
                 for genre in genres:
-                    parse_year = year_parse(row[1])
-                    if genre in row[2] and year_from <= parse_year[0] <= year_to and re.search(regexp, row[1]):
-                        films[row[0]] = Film(row[2], row[1][0:parse_year[1] - 1], parse_year[0])
+                    parse_year = year_parse(film_name)
+                    if genre in film_genres and year_from <= parse_year[0] <= year_to and re.search(regexp, film_name):
+                        films[film_id] = Film(film_genres, film_name[0:parse_year[1] - 1], parse_year[0])
                         break
         return films
     except Exception:
@@ -41,9 +42,10 @@ def count_ratings(films):
             rating_csv = csv.reader(ratings_csv, delimiter=',', quotechar='"')
             next(rating_csv, None)
             for row in rating_csv:
-                if row[1] in films:
-                    films[row[1]].rating_sum = films[row[1]].rating_sum + float(row[2])
-                    films[row[1]].rating_count = films[row[1]].rating_count + 1
+                user_id, movie_id, rating, timestamp = row
+                if movie_id in films:
+                    films[movie_id].rating_sum = films[movie_id].rating_sum + float(rating)
+                    films[movie_id].rating_count = films[movie_id].rating_count + 1
             return sorted(films.items(),
                           key=lambda item: item[1].get_rating(),
                           reverse=True)
