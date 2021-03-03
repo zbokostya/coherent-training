@@ -1,3 +1,5 @@
+use test1;
+
 UPDATE films as t1
     inner join (
         select film_id,

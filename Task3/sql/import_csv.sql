@@ -1,3 +1,5 @@
+use test1;
+
 LOAD DATA INFILE '/var/films/ml-latest-small/movies.csv'
 INTO TABLE films
 FIELDS TERMINATED BY ','

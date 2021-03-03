@@ -1,3 +1,5 @@
+use test1;
+
 drop table if exists ratings;
 create table ratings
 (

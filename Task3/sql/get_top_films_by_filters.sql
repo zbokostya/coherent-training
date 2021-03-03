@@ -1,3 +1,5 @@
+use test1;
+
 DROP TABLE IF EXISTS cnt;
 create table cnt
 (
@@ -7,31 +9,25 @@ create table cnt
     rating float        null
 );
 
-# DROP PROCEDURE IF EXISTS get_all_genres;
-# CREATE PROCEDURE get_all_genres()
-# BEGIN
-#     DECLARE ite INT;
-#     SET @s = 'INSERT INTO @table1 VALUES (SELECT NULL WHERE 0=1 ';
-#     select MAX(LENGTH(genres) - LENGTH(REPLACE(genres, '|', ''))) + 1 as max
-#     FROM films
-#     INTO ite;
-#
-#     WHILE (ite > 0)
-#         DO
-#             SET @s = concat(@s, 'UNION SELECT trim(substring_index(
-#                                 SUBSTRING_INDEX(genres, \'|\',' , ite, '),\'|\', -1)) as data
-#                              FROM films ');
-#             SET ite := ite - 1;
-#         END WHILE;
-#     SET @s = concat(@s, ');');
-#     PREPARE stmt FROM @s;
-#     DEALLOCATE PREPARE stmt;
-# #     SELECT * from @ table1;
-#     INSERT INTO @table1 VALUES (1,2);
-#     SELECT * FROM @table1;
-#
-# END;
-# call get_all_genres();
+DROP PROCEDURE IF EXISTS `get_all_genres`;
+CREATE PROCEDURE `get_all_genres`(OUT rez VARCHAR(200))
+BEGIN
+    SET @a := 0;
+
+   SET @a := 0;
+
+SELECT GROUP_CONCAT(DISTINCT REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(genres, '|', a.nb), '|', -1), CHAR(13), ''), CHAR(10), '') separator '|') data
+                FROM films,
+                     (SELECT @a := @a + 1 nb
+                      FROM films
+                      WHERE @a < (SELECT MAX(LENGTH(m1.genres)
+                          - LENGTH(REPLACE(m1.genres, '|', ''))) + 1 max
+                                  FROM films m1)) a
+    INTO rez;
+
+END;
+
+
 
 
 
@@ -47,6 +43,10 @@ BEGIN
     DECLARE front TEXT DEFAULT NULL;
     DECLARE frontlen INT DEFAULT NULL;
     DECLARE TempValue TEXT DEFAULT NULL;
+
+    IF(length(filter_genre) = 0) THEN
+        CALL `get_all_genres`(filter_genre);
+    END IF;
     iterator:
     LOOP
         IF LENGTH(TRIM(filter_genre)) = 0 OR filter_genre IS NULL THEN
@@ -67,3 +67,4 @@ BEGIN
         SET filter_genre = INSERT(filter_genre, 1, frontlen + 1, '');
     END LOOP;
 end;
+

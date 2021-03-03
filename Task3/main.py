@@ -26,8 +26,7 @@ def get_connection_to_database():
         user='root',
         password='zFh3gm0BLnwb',
         port='3306',
-        host='127.0.0.1',
-        database='test1')
+        host='127.0.0.1')
     return cnx
 
 
@@ -39,7 +38,6 @@ def run_scripts(cnx):
         script_path = file_folder_path / pathlib.Path(script)
         script_file = open(script_path)
         sql_query = script_file.read()
-
         list(cursor.execute(sql_query, multi=True))
         cnx.commit()
     return cursor
@@ -49,17 +47,18 @@ def main():
     args = arg_parse()
     cnx = get_connection_to_database()
     cursor = run_scripts(cnx)
-    get_result(cursor, args)
+    get_result(cursor, args.genres, args.year_from, args.year_to, args.regexp, args.N)
     print_result(cursor)
 
 
-def get_result(cursor, args):
+def get_result(cursor, genres='', year_from=0, year_to=9999, regexp='', cont_n=10):
     cursor.execute('CALL filter(\'{}\', {}, {}, \'{}\', {})'
-                   .format(args.genres, args.year_from, args.year_to, args.regexp, args.N))
+                   .format(genres, year_from, year_to, regexp, cont_n))
     cursor.execute('SELECT * FROM cnt')
 
 
 def print_result(cursor):
+    print('genre,title,year,rating')
     for i in cursor:
         print("{},{},{},{}".format(i[2], i[0], i[1], i[3]))
 
