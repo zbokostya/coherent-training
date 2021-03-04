@@ -3,6 +3,7 @@ import pathlib
 import argparse
 
 scripts = [
+    'create_database.sql',
     'create_table.sql',
     'import_csv.sql',
     'update_films.sql',
@@ -54,7 +55,7 @@ def main():
 def get_result(cursor, genres='', year_from=0, year_to=9999, regexp='', cont_n=10):
     cursor.execute('CALL filter(\'{}\', {}, {}, \'{}\', {})'
                    .format(genres, year_from, year_to, regexp, cont_n))
-    cursor.execute('SELECT * FROM cnt')
+    cursor.execute('SELECT * FROM filtered_films')
 
 
 def print_result(cursor):

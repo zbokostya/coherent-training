@@ -1,4 +1,4 @@
-use test1;
+use films_catalog;
 
 UPDATE films as t1
     inner join (

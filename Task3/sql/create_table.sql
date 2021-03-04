@@ -1,4 +1,4 @@
-use test1;
+use films_catalog;
 
 drop table if exists ratings;
 create table ratings

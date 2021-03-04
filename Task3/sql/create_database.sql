@@ -1,1 +1,1 @@
-create database if not exists test1;
+create database if not exists films_catalog;
