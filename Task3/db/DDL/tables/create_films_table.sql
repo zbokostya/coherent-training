@@ -1,15 +1,5 @@
 use films_catalog;
 
-drop table if exists ratings;
-create table ratings
-(
-    movie_id  int   null,
-    user_id   int   null,
-    rating    float null,
-    timestamp int   null
-);
-
-
 drop table if exists films;
 create table films
 (
@@ -21,4 +11,3 @@ create table films
     ratings_count int default 0 null,
     ratings_sum   int default 0 null
 );
-

@@ -1,13 +1,18 @@
-import mysql.connector
 import pathlib
 import argparse
+import db_setup.db_connect as conn
+from db_setup.config import file_folder_path
 
 scripts = [
-    'create_database.sql',
-    'create_table.sql',
-    'import_csv.sql',
-    'update_films.sql',
-    'get_top_films_by_filters.sql'
+    'db/DDL/databases/create_database.sql',
+    'db/DDL/tables/create_ratings_table.sql',
+    'db/DDL/tables/create_films_table.sql',
+    'db/DML/import_csv/import_films_csv.sql',
+    'db/DML/import_csv/import_ratings_csv.sql',
+    'db/DML/update/update_films.sql',
+    'db/DDL/tables/create_ratings_table.sql',
+    'db/DDL/procedures/get_genres_string.sql',
+    'db/DDL/procedures/get_top_films_by_filters.sql'
 ]
 
 
@@ -22,40 +27,17 @@ def arg_parse():
     return parser.parse_args()
 
 
-def get_connection_to_database():
-    cnx = mysql.connector.connect(
-        user='root',
-        password='zFh3gm0BLnwb',
-        port='3306',
-        host='127.0.0.1')
-    return cnx
-
-
-def run_scripts(cnx):
-    file_folder_path = pathlib.Path(__file__).parent / pathlib.Path('sql')
-    cursor = cnx.cursor(buffered=True)
-
+def run_scripts():
     for script in scripts:
         script_path = file_folder_path / pathlib.Path(script)
-        script_file = open(script_path)
-        sql_query = script_file.read()
-        list(cursor.execute(sql_query, multi=True))
-        cnx.commit()
-    return cursor
+        conn.run_script(script_path)
 
 
 def main():
     args = arg_parse()
-    cnx = get_connection_to_database()
-    cursor = run_scripts(cnx)
-    get_result(cursor, args.genres, args.year_from, args.year_to, args.regexp, args.N)
-    print_result(cursor)
-
-
-def get_result(cursor, genres='', year_from=0, year_to=9999, regexp='', cont_n=10):
-    cursor.execute('CALL filter(\'{}\', {}, {}, \'{}\', {})'
-                   .format(genres, year_from, year_to, regexp, cont_n))
-    cursor.execute('SELECT * FROM filtered_films')
+    run_scripts()
+    result = conn.execute_script(args.genres, args.year_from, args.year_to, args.regexp, args.N)
+    print_result(result)
 
 
 def print_result(cursor):
