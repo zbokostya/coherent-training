@@ -6,7 +6,7 @@ UPDATE films as t1
                IF(locate(')', reverse(title)) != 0,
                   reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)), 0)    as year,
                IF(locate('(', reverse(title)) != 0,
-                  reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), 0) as title
+                  reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title) as title
         from films
         where film_id
     ) as t2

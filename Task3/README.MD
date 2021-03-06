@@ -5,7 +5,7 @@ Program analise films dataset, counts ratings and print top films searched by fi
 ### Program structure
 
 * main.py - execution file
-* /sql - sql scripts folder
+* /db - sql scripts structure
 * /data - dataset folder
 
 ### Execution

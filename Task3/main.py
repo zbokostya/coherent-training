@@ -16,7 +16,7 @@ scripts = [
 ]
 
 
-def arg_parse():
+def parse_arg():
     parser = argparse.ArgumentParser(description='Films analytics program')
     parser.add_argument('-N', default=10, type=int, help='Number of max rating films')
     parser.add_argument('-genres', default='', type=str, help='Filter by genres')
@@ -33,17 +33,17 @@ def run_scripts():
         conn.run_script(script_path)
 
 
-def main():
-    args = arg_parse()
-    run_scripts()
-    result = conn.execute_script(args.genres, args.year_from, args.year_to, args.regexp, args.N)
-    print_result(result)
-
-
 def print_result(cursor):
     print('genre,title,year,rating')
     for i in cursor:
         print("{},{},{},{}".format(i[2], i[0], i[1], i[3]))
+
+
+def main():
+    args = parse_arg()
+    run_scripts()
+    result = conn.get_result(args.genres, args.year_from, args.year_to, args.regexp, args.N)
+    print_result(result)
 
 
 if __name__ == '__main__':
