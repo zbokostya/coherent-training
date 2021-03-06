@@ -1,6 +1,5 @@
 use films_catalog;
 
-truncate filtered_films;
 DROP PROCEDURE IF EXISTS `filter`;
 CREATE PROCEDURE `filter`(IN filter_genre TEXT,
                           IN filter_year_from INT(4),

@@ -11,8 +11,10 @@ scripts = [
     'db/DML/import_csv/import_ratings_csv.sql',
     'db/DML/update/update_films.sql',
     'db/DDL/tables/create_ratings_table.sql',
+    'db/DDL/tables/create_filtered_table.sql',
     'db/DDL/procedures/get_genres_string.sql',
-    'db/DDL/procedures/get_top_films_by_filters.sql'
+    'db/DDL/procedures/get_top_films_by_filters.sql',
+
 ]
 
 
