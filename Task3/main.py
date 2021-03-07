@@ -1,20 +1,25 @@
 import pathlib
 import argparse
 import db_setup.db_connect as conn
+import time
+import db_setup.csv_parser as csv
+
 from db_setup.config import file_folder_path
 
-scripts = [
-    'db/DDL/databases/create_database.sql',
+scripts_rez = [
     'db/DDL/tables/create_ratings_table.sql',
     'db/DDL/tables/create_films_table.sql',
-    'db/DML/import_csv/import_films_csv.sql',
-    'db/DML/import_csv/import_ratings_csv.sql',
-    'db/DML/update/update_films.sql',
+    'db/DML/insert/insert_refactored_films.sql',
+    'db/DML/insert/insert_ratings.sql',
     'db/DDL/tables/create_ratings_table.sql',
     'db/DDL/tables/create_filtered_table.sql',
     'db/DDL/procedures/get_genres_string.sql',
     'db/DDL/procedures/get_top_films_by_filters.sql',
+]
 
+scripts_prepare = [
+    'db/DDL/tables/create_prepare_ratings_table.sql',
+    'db/DDL/tables/create_prepare_films_table.sql',
 ]
 
 
@@ -29,7 +34,7 @@ def parse_arg():
     return parser.parse_args()
 
 
-def run_scripts():
+def run_scripts(scripts):
     for script in scripts:
         script_path = file_folder_path / pathlib.Path(script)
         conn.run_script(script_path)
@@ -42,10 +47,15 @@ def print_result(cursor):
 
 
 def main():
+    start = time.time()
     args = parse_arg()
-    run_scripts()
+    run_scripts(scripts_prepare)
+    csv.parse_films_csv()
+    csv.parse_ratings_csv()
+    run_scripts(scripts_rez)
     result = conn.get_result(args.genres, args.year_from, args.year_to, args.regexp, args.N)
     print_result(result)
+    print(time.time() - start)
 
 
 if __name__ == '__main__':

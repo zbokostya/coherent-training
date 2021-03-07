@@ -4,10 +4,10 @@ UPDATE films as t1
     inner join (
         select film_id,
                IF(locate(')', reverse(title)) != 0,
-                  reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)), 0)    as year,
+                  cast(reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)) as unsigned ), 0)    as year,
                IF(locate('(', reverse(title)) != 0,
                   reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title) as title
-        from films
+        from films_prepare_catalog.films
         where film_id
     ) as t2
 SET t1.year  = t2.year,
@@ -17,7 +17,7 @@ where t1.film_id = t2.film_id;
 UPDATE films as t1
     inner join (
         select movie_id, count(rating) as cnt, SUM(rating) as sum
-        FROM ratings
+        FROM films_prepare_catalog.ratings
         GROUP BY movie_id
     ) as t2
 SET t1.ratings_count = t2.cnt,

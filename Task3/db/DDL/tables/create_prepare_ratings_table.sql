@@ -1,4 +1,4 @@
-use films_catalog;
+use films_prepare_catalog;
 
 create table if not exists ratings
 (
