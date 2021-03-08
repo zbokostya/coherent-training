@@ -1,26 +1,18 @@
-use films_catalog;
-
-UPDATE films as t1
-    inner join (
-        select film_id,
-               IF(locate(')', reverse(title)) != 0,
-                  cast(reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)) as unsigned ), 0)    as year,
-               IF(locate('(', reverse(title)) != 0,
-                  reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title) as title
-        from films_prepare_catalog.films
-        where film_id
-    ) as t2
-SET t1.year  = t2.year,
-    t1.title = t2.title
-where t1.film_id = t2.film_id;
-
-UPDATE films as t1
-    inner join (
-        select movie_id, count(rating) as cnt, SUM(rating) as sum
+INSERT INTO films_catalog.films
+SELECT film_id,
+       IF(locate('(', reverse(title)) != 0,
+          reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title)            as title,
+       IF(locate(')', reverse(title)) != 0,
+          cast(reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)) as unsigned), 0) as year,
+       genres,
+       (select count(rating)
         FROM films_prepare_catalog.ratings
+        WHERE movie_id = t1.film_id
         GROUP BY movie_id
-    ) as t2
-SET t1.ratings_count = t2.cnt,
-    t1.ratings_sum   = t2.sum
-where t1.film_id = t2.movie_id;
+       ),
+       (select sum(rating)
+        FROM films_prepare_catalog.ratings
+        WHERE movie_id = t1.film_id
+        GROUP BY movie_id)
+FROM films_prepare_catalog.films as t1;
 

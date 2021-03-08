@@ -31,11 +31,13 @@ class Database(metaclass=DataBaseConnection):
 
 def run_script(sql_file_path):
     cursor = Database().connect()
+    cnx = Database().connection
     with open(sql_file_path) as script_file:
         sql_query = script_file.read()
         print(sql_file_path)
         try:
             list(cursor.execute(sql_query, multi=True))
+            cnx.commit()
         except connector.Error as e:
             print("Error while executing script: ", sql_file_path)
             print(e)
