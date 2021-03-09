@@ -1,9 +1,8 @@
 INSERT INTO films_catalog.films
 SELECT film_id,
        IF(locate('(', reverse(title)) != 0,
-          reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title)            as title,
-       IF(locate(')', reverse(title)) != 0,
-          cast(reverse(substring(reverse(title), locate(')', reverse(title)) + 1, 4)) as unsigned), 0) as year,
+          reverse(trim(substring(reverse(title), locate('(', reverse(title)) + 1))), title) as title,
+       IF(title regexp '([0-9]{4})', REGEXP_SUBSTR(title, '([0-9]{4})'), 0)                   as year,
        genres,
        (select count(rating)
         FROM films_prepare_catalog.ratings

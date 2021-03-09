@@ -7,11 +7,8 @@ import db_setup.csv_parser as csv
 from db_setup.config import file_folder_path
 
 scripts_rez = [
-    'db/DDL/tables/create_ratings_table.sql',
     'db/DDL/tables/create_films_table.sql',
     'db/DML/insert/insert_refactored_films.sql',
-    'db/DML/insert/insert_ratings.sql',
-    'db/DDL/tables/create_ratings_table.sql',
     'db/DDL/tables/create_filtered_table.sql',
     'db/DDL/procedures/get_genres_string.sql',
     'db/DDL/procedures/get_top_films_by_filters.sql',
