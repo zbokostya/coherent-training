@@ -1,4 +1,4 @@
-from db_setup.config import config
+from db_admin.user_config import config
 import mysql.connector as connector
 
 
@@ -41,14 +41,3 @@ def run_script(sql_file_path):
         except connector.Error as e:
             print("Error while executing script: ", sql_file_path)
             print(e)
-
-
-def get_result(genres='', year_from=0, year_to=9999, regexp='', cont_n=10):
-    cursor = Database().connect()
-    try:
-        cursor.execute('use films_catalog;')
-        cursor.callproc('filter', (genres, year_from, year_to, regexp, cont_n))
-        cursor.execute('SELECT * FROM filtered_films ORDER BY genres, rating DESC ;')
-        return cursor.fetchall()
-    except connector.Error:
-        print("Error while getting result")

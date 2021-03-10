@@ -1,7 +1,7 @@
 from mysql import connector
 
-import db_setup.db_connect as conn
-from db_setup.config import file_folder_path
+import db_connect as conn
+from user_config import file_folder_path
 import csv
 
 
@@ -34,12 +34,13 @@ def parse_films_csv():
             movies_csv = csv.reader(movies, delimiter=',', quotechar='"')
             next(movies)
             cursor = conn.Database().connect()
+            cursor.execute('use films_prepare_catalog;')
             # cnx = conn.Database().get_connection()
             for movie_id, title, genres in movies_csv:
                 try:
                     # cursor.execute('BEGIN;')
                     cursor.execute(
-                        "INSERT INTO films_prepare_catalog.films(film_id, title, genres) VALUES (%(film_id)s,%(title)s,%(genres)s);",
+                        "INSERT INTO films_prepare_catalog.movies(movie_id, title, genres) VALUES (%(film_id)s,%(title)s,%(genres)s);",
                         {'film_id': movie_id, 'title': title, 'genres': genres})
                     # cursor.execute('END;')
                 except connector.Error as e:

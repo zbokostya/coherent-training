@@ -4,7 +4,9 @@ Program analise films dataset, counts ratings and print top films searched by fi
 
 ### Program structure
 
-* main.py - execution file
+* main.py - execution file  
+* /db_admin - admin scripts to setup db 
+  * db_setup - admin scripts execution file
 * /db - sql scripts structure
 * /data - dataset folder
 
@@ -16,6 +18,7 @@ Program runs using command line or terminal
 **main.py**  
 
 `usage: main.py [-h] [-N N] [-genres GENRES] [-year_from YEAR_FROM] [-year_to YEAR_TO] [-regexp REGEXP]`
+`usage: db_admin/db_setup.py`
 
 **Optional**
 
