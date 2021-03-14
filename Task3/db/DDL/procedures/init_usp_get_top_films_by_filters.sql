@@ -7,9 +7,10 @@ CREATE PROCEDURE `usp_get_movies_by_filter`(IN filter_genre TEXT,
                                             IN filter_regexp TEXT,
                                             IN filter_count_n INT)
 BEGIN
-
     IF (length(filter_genre) = 0) THEN
-        CALL `usp_get_all_genres`(filter_genre);
+        SELECT GROUP_CONCAT(DISTINCT genre SEPARATOR '|')
+        FROM movies
+        INTO filter_genre;
     END IF;
 
     SELECT rs.title, rs.year, rs.genre, rs.ratings
