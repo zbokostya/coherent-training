@@ -8,7 +8,7 @@ scripts_folders = [
     '/db/DDL/tables',
     '/db/DML/import_csv',
     '/db/DML/insert',
-    '/db/DDL/procedure'
+    '/db/DDL/procedures'
 ]
 
 

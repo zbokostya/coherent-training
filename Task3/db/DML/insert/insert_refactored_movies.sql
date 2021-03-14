@@ -7,7 +7,7 @@ WITH RECURSIVE
                SUBSTRING_INDEX(genres, '|', 1)                    AS genre,
                IF(LOCATE('|', genres) != 0,
                   SUBSTRING(genres, LOCATE('|', genres) + 1), '') AS remain_genres
-        FROM movies
+        FROM films_prepare_catalog.movies
         UNION ALL
         SELECT movie_id,
                SUBSTRING_INDEX(remain_genres, '|', 1)                           AS genre,
@@ -26,7 +26,9 @@ WITH RECURSIVE
         SELECT movie_id,
                IF(locate('(', reverse(title)) != 0,
                   reverse(trim(substring(reverse(title), LOCATE('(', REVERSE(title)) + 1))), title) as title,
-               IF(title REGEXP '([0-9]{4})', REGEXP_SUBSTR(title, '([0-9]{4})'), 0)                 as year
+               IF(title REGEXP '\\([0-9]{4}\\)',
+                  SUBSTRING(REGEXP_SUBSTR(title, '\\([0-9]{4}\\)'), 2, 4),
+                  0)                                                                                as year
         FROM movies
     )
 SELECT cte_year_title.movie_id,
