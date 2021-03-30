@@ -1,27 +1,36 @@
 import re
 import csv
 import logging
-from film import Film
+import heapq
+from movie import Movie
 
 logging.basicConfig(format="", level=logging.DEBUG)
 
-DATA_DIR = 'data/ml-latest-small/'
 
-
-def get_films_id_by_filters(genres, year_from, year_to, regexp):
+def get_movies_by_filters(genres, ratings_dict, year_from, year_to, regexp, data_folder):
     try:
-        with open(DATA_DIR + 'movies.csv', newline='') as movies:
-            films_csv = csv.reader(movies, delimiter=',', quotechar='"')
-            films = dict()
-            for film_id, film_name, film_genres in films_csv:
-                for genre in genres:
-                    parse_year = year_parse(film_name)
-                    if genre in film_genres and year_from <= parse_year[0] <= year_to and re.search(regexp, film_name):
-                        films[film_id] = Film(film_genres, film_name[0:parse_year[1] - 1], parse_year[0])
-                        break
-        return films
+        with open(data_folder + '/movies.csv', newline='') as movies:
+            movies_csv = csv.reader(movies, delimiter=',', quotechar='"')
+            genres_movies = dict()
+            for genre in genres:
+                genres_movies[genre] = []
+
+            for movie_id, movie_name, movie_genres in movies_csv:
+                parse_year = year_parse(movie_name)
+                if year_from <= parse_year[0] <= year_to and re.search(regexp, movie_name):
+                    for genre in genres:
+                        if genre in movie_genres:
+                            if movie_id in ratings_dict:
+                                rating = ratings_dict[movie_id][0] / ratings_dict[movie_id][1]
+                            else:
+                                rating = 0.0
+                            heapq.heappush(
+                                genres_movies[genre],
+                                Movie(genre, movie_name[0:parse_year[1] - 1], parse_year[0],
+                                      rating))
+        return genres_movies
     except Exception:
-        logging.error("Error occurred while parsing films")
+        logging.error("processor:get_movies_by_filters:Error occurred while parsing movies")
 
 
 def year_parse(name):
@@ -34,27 +43,42 @@ def year_parse(name):
     return year, year_index
 
 
-def count_ratings(films):
+def count_ratings(data_folder):
+    ratings_dict = dict()
     try:
-        with open(DATA_DIR + 'ratings.csv', newline='') as ratings_csv:
+        with open(data_folder + '/ratings.csv', newline='') as ratings_csv:
             rating_csv = csv.reader(ratings_csv, delimiter=',', quotechar='"')
-            next(rating_csv, None)
+            next(rating_csv)
             for _, movie_id, rating, _ in rating_csv:
-                if movie_id in films:
-                    films[movie_id].rating_sum = films[movie_id].rating_sum + float(rating)
-                    films[movie_id].rating_count = films[movie_id].rating_count + 1
-            return sorted(films.items(),
-                          key=lambda item: item[1].get_rating(),
-                          reverse=True)
+                if movie_id not in ratings_dict:
+                    ratings_dict[movie_id] = (0, 0)
+                ratings_dict[movie_id] = (ratings_dict[movie_id][0] + float(rating), ratings_dict[movie_id][1] + 1)
+            return ratings_dict
     except Exception:
-        logging.error("Error occurred while counting rating")
+        logging.error("processor:count_ratings:Error occurred while counting rating")
 
 
 def print_csv_like_format(top_ratings, count_n):
     print('genre,title,year,rating')
-    for _, film in top_ratings[:count_n]:
-        print(film)
+    for key, value in top_ratings.items():
+        arr = heapq.nlargest(count_n, value)
+        for i in arr:
+            print(i)
 
 
-def parse_films_genres(films_arg):
-    return films_arg.split(sep='|')
+def parse_movies_genres(movies_arg):
+    return movies_arg.split(sep='|')
+
+
+def get_all_genres(data_folder):
+    try:
+        genres = set()
+        with open(data_folder + '/movies.csv', newline='') as movies:
+            movies_csv = csv.reader(movies, delimiter=',', quotechar='"')
+            next(movies)
+            for _, _, movie_genres in movies_csv:
+                for genre in parse_movies_genres(movie_genres):
+                    genres.add(genre)
+        return genres
+    except Exception as e:
+        print(e)
