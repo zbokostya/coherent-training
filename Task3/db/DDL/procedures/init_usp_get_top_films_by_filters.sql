@@ -13,6 +13,7 @@ BEGIN
         INTO filter_genre;
     END IF;
 
+
     SELECT rs.title, rs.year, rs.genre, rs.ratings
     FROM (
              SELECT title,

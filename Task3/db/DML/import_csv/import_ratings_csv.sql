@@ -1,6 +1,6 @@
 use films_prepare_catalog;
 
-LOAD DATA INFILE '/var/films/ml-latest-small/ratings.csv'
+LOAD DATA INFILE '/var/films/ml-latest/ratings.csv'
     INTO TABLE ratings
     FIELDS TERMINATED BY ','
     ENCLOSED BY '"'

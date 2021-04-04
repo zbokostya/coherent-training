@@ -1,51 +1,69 @@
 from mysql import connector
 
-import db_connect as conn
-from user_config import file_folder_path
+import db_admin.db_connect as conn
+from db_admin.user_config import file_folder_path
 import csv
 
 
+def get_line_ratings_generator(ratings_csv):
+    for user_id, movie_id, rating, timestamp in ratings_csv:
+        yield user_id, movie_id, rating, timestamp
+
+
+def get_line_movies_generator(ratings_csv):
+    for movie_id, title, genres in ratings_csv:
+        yield movie_id, title, genres
+
+
 def parse_ratings_csv():
-    try:
-        with open(file_folder_path + '/data/ml-latest-small/ratings.csv', newline='') as ratings:
-            ratings_csv = csv.reader(ratings, delimiter=',', quotechar='"')
-            next(ratings)
-            cursor = conn.Database().connect()
-            #
-            cursor.execute('use films_prepare_catalog;')
-            for user_id, movie_id, rating, timestamp in ratings_csv:
-                try:
-                    # cursor.execute('BEGIN;')
-                    cursor.execute(
-                        "INSERT INTO films_prepare_catalog.ratings(movie_id, user_id, rating, `timestamp`) VALUES (%(movie_id)s,%(user_id)s,%(rating)s,%(timestamp)s);",
-                        {'user_id': user_id, 'movie_id': movie_id, 'rating': rating, 'timestamp': timestamp})
-                    # cursor.execute('END;')
-                except connector.Error as e:
-                    print('Error while parsing movies.csv', e)
-            cnx = conn.Database().get_connection()
-            cnx.commit()
-    except Exception:
-        print('Error while reading movies.csv')
+    path_file = file_folder_path + '/data/ml-latest-small/ratings.csv'
+    cursor = conn.Database().connect()
+    with open(path_file) as ratings:
+        ratings_csv = csv.reader(ratings, delimiter=',', quotechar='"')
+        next(ratings)
+
+        gen = get_line_ratings_generator(ratings_csv)
+
+        while True:
+            chunk = []
+            try:
+                for _ in range(1_000):
+                    chunk.append(next(gen))
+                cursor.executemany(
+                    "INSERT INTO films_prepare_catalog.ratings(user_id, movie_id, rating, `timestamp`) VALUES (%s,%s,%s,%s);",
+                    chunk)
+            except StopIteration:
+                print(len(chunk))
+                cursor.executemany(
+                    "INSERT INTO films_prepare_catalog.ratings(user_id, movie_id, rating, `timestamp`) VALUES (%s,%s,%s,%s);",
+                    chunk)
+                break
+        cnx = conn.Database().connection
+        cnx.commit()
 
 
-def parse_films_csv():
-    try:
-        with open(file_folder_path + '/data/ml-latest-small/movies.csv', newline='') as movies:
-            movies_csv = csv.reader(movies, delimiter=',', quotechar='"')
-            next(movies)
-            cursor = conn.Database().connect()
-            cursor.execute('use films_prepare_catalog;')
-            # cnx = conn.Database().get_connection()
-            for movie_id, title, genres in movies_csv:
-                try:
-                    # cursor.execute('BEGIN;')
-                    cursor.execute(
-                        "INSERT INTO films_prepare_catalog.movies(movie_id, title, genres) VALUES (%(film_id)s,%(title)s,%(genres)s);",
-                        {'film_id': movie_id, 'title': title, 'genres': genres})
-                    # cursor.execute('END;')
-                except connector.Error as e:
-                    print('Error while parsing movies.csv', e)
-            cnx = conn.Database().get_connection()
-            cnx.commit()
-    except Exception as e:
-        print('Error while reading movies.csv', e)
+def parse_movies_csv():
+    path_file = file_folder_path + '/data/ml-latest-small/movies.csv'
+    cursor = conn.Database().connect()
+    with open(path_file) as movies:
+        movies_csv = csv.reader(movies, delimiter=',', quotechar='"')
+        next(movies)
+
+        gen = get_line_movies_generator(movies_csv)
+
+        while True:
+            chunk = []
+            try:
+                for _ in range(1_000):
+                    chunk.append(next(gen))
+                cursor.executemany(
+                    "INSERT INTO films_prepare_catalog.movies(movie_id, title, genres) VALUES (%s,%s,%s);",
+                    chunk)
+            except StopIteration:
+                print(len(chunk))
+                cursor.executemany(
+                    "INSERT INTO films_prepare_catalog.movies(movie_id, title, genres) VALUES (%s,%s,%s);",
+                    chunk)
+                break
+        cnx = conn.Database().connection
+        cnx.commit()

@@ -1,12 +1,14 @@
-import csv_parser as csv
-import db_connect as conn
+import db_admin.csv_parser as csv
+import db_admin.db_connect as conn
 import os
-from user_config import file_folder_path
+from db_admin.user_config import file_folder_path
 
-scripts_folders = [
+ddl_scripts_folders = [
     '/db/DDL/databases',
-    '/db/DDL/tables',
-    '/db/DML/import_csv',
+    '/db/DDL/tables'
+]
+
+dml_scripts_folders = [
     '/db/DML/insert',
     '/db/DDL/procedures'
 ]
@@ -25,11 +27,10 @@ def run_scripts(folder_path):
 
 
 def main():
-    run_scripts(scripts_folders)
-    # much faster to use 'db/DML/import_csv/' scripts
-
-    # csv.parse_films_csv()
-    # csv.parse_ratings_csv()
+    run_scripts(ddl_scripts_folders)
+    csv.parse_ratings_csv()
+    csv.parse_movies_csv()
+    run_scripts(dml_scripts_folders)
 
 
 if __name__ == '__main__':
