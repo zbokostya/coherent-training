@@ -10,3 +10,4 @@ rm -f ./dataset/ml-latest-medium/ratings.csv
 rm -f ./dataset/ml-latest-medium/links.csv
 rm -f ./dataset/ml-latest-medium/tags.csv
 rm -f ./dataset/ml-latest-medium/README.txt
+rm -f dataset-medium.zip
