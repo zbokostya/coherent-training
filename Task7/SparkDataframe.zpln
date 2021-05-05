@@ -1,0 +1,586 @@
+﻿{
+ "paragraphs": [
+  {
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "apps": [],
+   "status": "READY",
+   "text": "%pyspark\n\nsearch_genres = 'Comedy|Adventure'\nyear_from = 2000\nyear_to = 2010\nregexp = 'Life'\ntop_n = 3\n",
+   "id": "",
+   "config": {}
+  },
+  {
+   "text": "%sh\n\nrm -rf ./dataset/ml-latest-small\nmkdir -p ./dataset\nwget -O dataset-small.zip \"https://files.grouplens.org/datasets/movielens/ml-latest-small.zip\" --no-check-certificate\nunzip -j dataset-small.zip -d ./dataset/ml-latest-small\n\n\nrm -f ./dataset/ml-latest-small/links.csv\nrm -f ./dataset/ml-latest-small/tags.csv\nrm -f ./dataset/ml-latest-small/README.txt\nrm -f dataset-small.zip\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:54:56+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "--2021-05-05 20:54:56--  https://files.grouplens.org/datasets/movielens/ml-latest-small.zip\nResolving files.grouplens.org (files.grouplens.org)... 128.101.65.152\nConnecting to files.grouplens.org (files.grouplens.org)|128.101.65.152|:443... connected.\nWARNING: cannot verify files.grouplens.org's certificate, issued by ‘CN=InCommon RSA Server CA,OU=InCommon,O=Internet2,L=Ann Arbor,ST=MI,C=US’:\n  Unable to locally verify the issuer's authority.\nHTTP request sent, awaiting response... 200 OK\nLength: 978202 (955K) [application/zip]\nSaving to: ‘dataset-small.zip’\n\n     0K .......... .......... .......... .......... ..........  5%  160K 6s\n    50K .......... .......... .......... .......... .......... 10%  331K 4s\n   100K .......... .......... .......... .......... .......... 15% 4.16M 3s\n   150K .......... .......... .......... .......... .......... 20%  359K 2s\n   200K .......... .......... .......... .......... .......... 26% 4.21M 2s\n   250K .......... .......... .......... .......... .......... 31% 8.00M 1s\n   300K .......... .......... .......... .......... .......... 36%  352K 1s\n   350K .......... .......... .......... .......... .......... 41% 15.1M 1s\n   400K .......... .......... .......... .......... .......... 47% 6.46M 1s\n   450K .......... .......... .......... .......... .......... 52% 5.69M 1s\n   500K .......... .......... .......... .......... .......... 57%  375K 1s\n   550K .......... .......... .......... .......... .......... 62% 17.2M 1s\n   600K .......... .......... .......... .......... .......... 68% 7.84M 0s\n   650K .......... .......... .......... .......... .......... 73% 10.8M 0s\n   700K .......... .......... .......... .......... .......... 78% 10.1M 0s\n   750K .......... .......... .......... .......... .......... 83%  384K 0s\n   800K .......... .......... .......... .......... .......... 88% 4.91M 0s\n   850K .......... .......... .......... .......... .......... 94% 9.50M 0s\n   900K .......... .......... .......... .......... .......... 99% 46.1M 0s\n   950K .....                                                 100% 28.2M=1.1s\n\n2021-05-05 20:54:59 (874 KB/s) - ‘dataset-small.zip’ saved [978202/978202]\n\nbash: line 3: unzip: command not found\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620248096526_2032218680",
+   "id": "paragraph_1620248096526_2032218680",
+   "dateCreated": "2021-05-05T20:54:56+0000",
+   "dateStarted": "2021-05-05T20:54:56+0000",
+   "dateFinished": "2021-05-05T20:54:59+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\nimport re\nfrom pyspark.sql.types import IntegerType\nfrom pyspark.sql.types import FloatType\nfrom pyspark.sql.functions import explode, split, count, array_contains\nfrom pyspark.sql.window import Window\nfrom pyspark.sql.functions import rank, col, round\n\nsearch_genres = search_genres.split(\"|\")\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:52+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247312749_1504968373",
+   "id": "paragraph_1620247312749_1504968373",
+   "dateCreated": "2021-05-05T20:41:52+0000",
+   "dateStarted": "2021-05-05T20:41:52+0000",
+   "dateFinished": "2021-05-05T20:41:53+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\ndf_movies = spark.read\\\n    .format(\"csv\")\\\n    .option(\"header\", \"true\")\\\n    .load(\"file:///zeppelin/seed/ml-latest-small/movies.csv\")\n    \n    \ndf_ratings = spark.read\\\n    .format(\"csv\")\\\n    .option(\"header\", \"true\")\\\n    .load(\"file:///zeppelin/seed/ml-latest-small/ratings.csv\")",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:53+0000",
+   "progress": 100.0,
+   "config": {
+    "editorSetting": {
+     "language": "scala",
+     "editOnDblClick": false,
+     "completionKey": "TAB",
+     "completionSupport": true
+    },
+    "colWidth": 12.0,
+    "editorMode": "ace/mode/scala",
+    "fontSize": 9.0,
+    "results": {},
+    "enabled": true
+   },
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=303"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=304"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247313685_1227029030",
+   "id": "paragraph_1620247313685_1227029030",
+   "dateCreated": "2021-05-05T20:41:53+0000",
+   "dateStarted": "2021-05-05T20:41:53+0000",
+   "dateFinished": "2021-05-05T20:41:55+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\nto_int = spark.udf.register(\"to_int\", lambda val: int(val), IntegerType())\nto_float = spark.udf.register(\"to_float\", lambda val: float(val), FloatType())",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:55+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247315578_1159635271",
+   "id": "paragraph_1620247315578_1159635271",
+   "dateCreated": "2021-05-05T20:41:55+0000",
+   "dateStarted": "2021-05-05T20:41:55+0000",
+   "dateFinished": "2021-05-05T20:41:56+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\nget_title_udf = spark.udf.register(\"get_title\", lambda title: title[0:title.rfind('(')])\nget_year_udf = spark.udf.register(\"get_year\", lambda title: int(re.search(\"\\\\([0-9]{4}\\\\)\", title).group(0)[1:5]) if re.search(\"\\\\([0-9]{4}\\\\)\", title) else 0, IntegerType()) \n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:56+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247316106_431181693",
+   "id": "paragraph_1620247316106_431181693",
+   "dateCreated": "2021-05-05T20:41:56+0000",
+   "dateStarted": "2021-05-05T20:41:56+0000",
+   "dateFinished": "2021-05-05T20:41:56+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\ndf_normalized_movies = df_movies.select(\"movieId\", get_title_udf(\"title\").alias(\"title\"), get_year_udf(\"title\").alias(\"year\"), \"genres\")\n\ndf_normalized_movies.show(10, truncate=False)",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:56+0000",
+   "progress": 0.0,
+   "config": {
+    "results": [
+     {
+      "mode": "table"
+     }
+    ]
+   },
+   "settings": {
+    "params": {
+     "bdtMeta": {
+      "inlay": {
+       "state": {
+        "currentPage": "Table"
+       }
+      }
+     }
+    },
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------+----------------------------+----+-------------------------------------------+\n|movieId|title                       |year|genres                                     |\n+-------+----------------------------+----+-------------------------------------------+\n|1      |Toy Story                   |1995|Adventure|Animation|Children|Comedy|Fantasy|\n|2      |Jumanji                     |1995|Adventure|Children|Fantasy                 |\n|3      |Grumpier Old Men            |1995|Comedy|Romance                             |\n|4      |Waiting to Exhale           |1995|Comedy|Drama|Romance                       |\n|5      |Father of the Bride Part II |1995|Comedy                                     |\n|6      |Heat                        |1995|Action|Crime|Thriller                      |\n|7      |Sabrina                     |1995|Comedy|Romance                             |\n|8      |Tom and Huck                |1995|Adventure|Children                         |\n|9      |Sudden Death                |1995|Action                                     |\n|10     |GoldenEye                   |1995|Action|Adventure|Thriller                  |\n+-------+----------------------------+----+-------------------------------------------+\nonly showing top 10 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=305"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247316517_190978307",
+   "id": "paragraph_1620247316517_190978307",
+   "dateCreated": "2021-05-05T20:41:56+0000",
+   "dateStarted": "2021-05-05T20:41:56+0000",
+   "dateFinished": "2021-05-05T20:41:57+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\ndf_filtered_movies = df_normalized_movies.where((year_from <= df_normalized_movies.year) \n                           & (df_normalized_movies.year <= year_to) \n                           & (df_normalized_movies.title.contains(regexp)))\ndf_filtered_movies.createOrReplaceTempView(\"movies\")\ndf_filtered_movies.show(5)",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:57+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------+--------------------+----+--------------------+\n|movieId|               title|year|              genres|\n+-------+--------------------+----+--------------------+\n|   3998|      Proof of Life |2000|               Drama|\n|   4873|        Waking Life |2001|Animation|Drama|F...|\n|   4879|High Heels and Lo...|2001|Action|Comedy|Cri...|\n|   4880|    Life as a House |2001|               Drama|\n|   5324|Life or Something...|2002|      Comedy|Romance|\n+-------+--------------------+----+--------------------+\nonly showing top 5 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=306"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247317493_1462685588",
+   "id": "paragraph_1620247317493_1462685588",
+   "dateCreated": "2021-05-05T20:41:57+0000",
+   "dateStarted": "2021-05-05T20:41:57+0000",
+   "dateFinished": "2021-05-05T20:41:58+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\ndf_normalized_ratings = df_ratings.select(\n    to_int(df_ratings.movieId).alias(\"movieId\"),\n    to_float(df_ratings.rating).alias(\"rating\"))\ndf_normalized_ratings.createOrReplaceTempView(\"ratings\")\ndf_normalized_ratings.show(5)",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:41:58+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------+------+\n|movieId|rating|\n+-------+------+\n|      1|   4.0|\n|      3|   4.0|\n|      6|   4.0|\n|     47|   5.0|\n|     50|   5.0|\n+-------+------+\nonly showing top 5 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=307"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247318768_1305621401",
+   "id": "paragraph_1620247318768_1305621401",
+   "dateCreated": "2021-05-05T20:41:58+0000",
+   "dateStarted": "2021-05-05T20:41:58+0000",
+   "dateFinished": "2021-05-05T20:41:59+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n# df_rating = df_normalized_ratings.filter(df_filtered_movies.movieId.contains(df_normalized_ratings.movie_id))\n# df_rating.show(5)\n\n# df_rating = spark.sql(\"\"\"\n# SELECT movieId, CAST(rating AS FLOAT) \n# FROM ratings\n# WHERE movieId IN (SELECT movieId FROM movies)\n# \"\"\")\n\n# df_rating = df_normalized_ratings.filter(df_normalized_ratings.movieId.contains(df_filtered_movies.movieId))\n# df_rating.show(5)",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:42:00+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247320057_1506907981",
+   "id": "paragraph_1620247320057_1506907981",
+   "dateCreated": "2021-05-05T20:42:00+0000",
+   "dateStarted": "2021-05-05T20:42:00+0000",
+   "dateFinished": "2021-05-05T20:42:00+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\ndf_counted_rating = df_normalized_ratings.groupBy(\"movieId\").avg(\"rating\")\ndf_counted_rating.show(5)",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:42:00+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------+-----------------+\n|movieId|      avg(rating)|\n+-------+-----------------+\n|   1580|3.487878787878788|\n|   2366|             3.64|\n|   3175|             3.58|\n|   1088|3.369047619047619|\n|  32460|             4.25|\n+-------+-----------------+\nonly showing top 5 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=308"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247320538_1772157320",
+   "id": "paragraph_1620247320538_1772157320",
+   "dateCreated": "2021-05-05T20:42:00+0000",
+   "dateStarted": "2021-05-05T20:42:00+0000",
+   "dateFinished": "2021-05-05T20:42:03+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\n\ndf_counted_movies = df_filtered_movies.join(df_counted_rating, df_counted_rating.movieId == df_filtered_movies.movieId, \"left\")\ndf_counted_movies.show(5)\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:42:03+0000",
+   "progress": 0.0,
+   "config": {
+    "results": [
+     {
+      "mode": "table"
+     }
+    ]
+   },
+   "settings": {
+    "params": {
+     "bdtMeta": {
+      "inlay": {
+       "state": {
+        "currentPage": "Table"
+       }
+      }
+     }
+    },
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------+--------------------+----+--------------------+-------+------------------+\n|movieId|               title|year|              genres|movieId|       avg(rating)|\n+-------+--------------------+----+--------------------+-------+------------------+\n|   3998|      Proof of Life |2000|               Drama|   3998|3.0416666666666665|\n|   4873|        Waking Life |2001|Animation|Drama|F...|   4873|3.6842105263157894|\n|   4879|High Heels and Lo...|2001|Action|Comedy|Cri...|   4879|               3.0|\n|   4880|    Life as a House |2001|               Drama|   4880| 3.888888888888889|\n|   5324|Life or Something...|2002|      Comedy|Romance|   5324|              2.75|\n+-------+--------------------+----+--------------------+-------+------------------+\nonly showing top 5 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=309"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=310"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247323301_1626326387",
+   "id": "paragraph_1620247323301_1626326387",
+   "dateCreated": "2021-05-05T20:42:03+0000",
+   "dateStarted": "2021-05-05T20:42:03+0000",
+   "dateFinished": "2021-05-05T20:42:08+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\ndf_exploded_movies = df_counted_movies\\\n    .select(\"title\", \"year\", round(col(\"avg(rating)\"), 2).alias(\"rating\"), explode(split(df_counted_movies.genres, '\\\\|'))\n            .alias(\"genre\"))\\\n    .where(col(\"genre\").isin(search_genres))\n\ndf_exploded_movies.show(5, truncate=False)\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:42:08+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "+-------------------------------------------+----+------+---------+\n|title                                      |year|rating|genre    |\n+-------------------------------------------+----+------+---------+\n|High Heels and Low Lifes                   |2001|3.0   |Comedy   |\n|Life or Something Like It                  |2002|2.75  |Comedy   |\n|Lara Croft Tomb Raider: The Cradle of Life |2003|2.65  |Adventure|\n|Lara Croft Tomb Raider: The Cradle of Life |2003|2.65  |Comedy   |\n|Life Aquatic with Steve Zissou, The        |2004|3.49  |Adventure|\n+-------------------------------------------+----+------+---------+\nonly showing top 5 rows\n\n"
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=311"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=312"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620247328603_854745193",
+   "id": "paragraph_1620247328603_854745193",
+   "dateCreated": "2021-05-05T20:42:08+0000",
+   "dateStarted": "2021-05-05T20:42:08+0000",
+   "dateFinished": "2021-05-05T20:42:14+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\n\nwindow = Window\\\n    .partitionBy(df_exploded_movies.genre)\\\n    .orderBy(df_exploded_movies.rating.desc())\n\ndf_result_rs = df_exploded_movies\\\n    .select(\"*\", rank().over(window).alias(\"rs\"))\\\n    .filter(col(\"rs\") <= top_n)\\\n    .orderBy(col(\"rating\").desc(), col(\"genre\"))\n\ndf_result = df_result_rs\\\n    .select(\"title\", \"year\", \"rating\", \"genre\")\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T20:59:22+0000",
+   "progress": 0.0,
+   "config": {
+    "results": [
+     {
+      "mode": "table"
+     }
+    ]
+   },
+   "settings": {
+    "params": {
+     "bdtMeta": {
+      "inlay": {
+       "state": {
+        "table": {
+         "columnWidths": {
+          "title": 130.0
+         }
+        },
+        "currentPage": "Table"
+       }
+      }
+     }
+    },
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620248362186_464849472",
+   "id": "paragraph_1620248362186_464849472",
+   "dateCreated": "2021-05-05T20:59:22+0000",
+   "dateStarted": "2021-05-05T20:59:22+0000",
+   "dateFinished": "2021-05-05T20:59:23+0000",
+   "status": "FINISHED"
+  },
+  {
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "apps": [],
+   "status": "READY",
+   "text": "%pyspark\n\ndef saveDfToCsv(df, tsvOutput, sep = \",\", header = 'false'):\n    tmpParquetDir = \"/zeppelin/seed/result\"\n\n    df.repartition(1).write\\\n        .format(\"csv\")\\\n        .option(\"header\", header)\\\n        .option(\"delimiter\", sep)\\\n        .save(tmpParquetDir)\n\n    dir = new File(tmpParquetDir)\n    newFileRgex = tmpParquetDir + File.separatorChar + \".part-00000.*.csv\"\n    tmpTsfFile = dir.listFiles.filter(_.toPath.toString.matches(newFileRgex))(0).toString\n    (new File(tmpTsvFile)).renameTo(new File(tsvOutput))\n\n    dir.listFiles.foreach( f => f.delete )\n    dir.delete",
+   "id": "",
+   "config": {}
+  },
+  {
+   "text": "%pyspark\n\ndf_result.repartition(1)\\\n    .write\\\n    .mode('overwrite')\\\n    .format('csv')\\\n    .partitionBy('genre')\\\n    .option('header', 'true')\\\n    .option('delimiter', ',')\\\n    .save('/zeppelin/seed/result')\n    # \n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-05T21:00:01+0000",
+   "progress": 81.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=327"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=328"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=329"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620248401835_774590610",
+   "id": "paragraph_1620248401835_774590610",
+   "dateCreated": "2021-05-05T21:00:01+0000",
+   "dateStarted": "2021-05-05T21:00:01+0000",
+   "dateFinished": "2021-05-05T21:00:10+0000",
+   "status": "FINISHED"
+  }
+ ],
+ "name": "Zeppelin Notebook",
+ "id": "",
+ "noteParams": {},
+ "noteForms": {},
+ "angularObjects": {},
+ "config": {
+  "isZeppelinNotebookCronEnable": false,
+  "looknfeel": "default",
+  "personalizedMode": "false"
+ },
+ "info": {}
+}
