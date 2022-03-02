@@ -29,6 +29,8 @@ def get_movies_by_filters(genres, ratings_dict, year_from, year_to, regexp, data
                                 Movie(genre, movie_name[0:parse_year[1] - 1], parse_year[0],
                                       rating))
         return genres_movies
+    except FileNotFoundError:
+        logging.error("processor:get_movies_by_filters:No such file:" + data_folder + '/movies.csv')
     except Exception:
         logging.error("processor:get_movies_by_filters:Error occurred while parsing movies")
 
@@ -54,6 +56,8 @@ def count_ratings(data_folder):
                     ratings_dict[movie_id] = (0, 0)
                 ratings_dict[movie_id] = (ratings_dict[movie_id][0] + float(rating), ratings_dict[movie_id][1] + 1)
             return ratings_dict
+    except FileNotFoundError:
+        logging.error("processor:get_movies_by_filters:No such file:" + data_folder + '/ratings.csv')
     except Exception:
         logging.error("processor:count_ratings:Error occurred while counting rating")
 

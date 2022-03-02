@@ -10,21 +10,25 @@ def arg_parse():
     parser.add_argument('-year_from', default=-1, type=int, help='Number of min year to filter')
     parser.add_argument('-year_to', default=9999, type=int, help='Number of max year to filter')
     parser.add_argument('-regexp', default='', type=str, help='Regular expression to filter')
-    parser.add_argument('-dataset', default='', type=str, help='Dataset folder')
+    parser.add_argument('-dataset', default='./data/ml-latest-small', type=str, help='Dataset folder')
     return parser.parse_args()
 
 
 def main():
-    args = arg_parse()
-    if args.genres == '':
-        genres = processor.get_all_genres(args.dataset)
-    else:
-        genres = processor.parse_movies_genres(args.genres)
+    try:
+        args = arg_parse()
+        if args.genres == '':
+            genres = processor.get_all_genres(args.dataset)
+        else:
+            genres = processor.parse_movies_genres(args.genres)
 
-    ratings = processor.count_ratings(args.dataset)
-    films = processor.get_movies_by_filters(genres, ratings, args.year_from, args.year_to, args.regexp,
-                                            args.dataset)
-    processor.print_csv_like_format(films, args.N)
+        ratings = processor.count_ratings(args.dataset)
+
+        films = processor.get_movies_by_filters(genres, ratings, args.year_from, args.year_to, args.regexp,
+                                                args.dataset)
+        processor.print_csv_like_format(films, args.N)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':

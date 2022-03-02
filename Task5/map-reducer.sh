@@ -1,4 +1,13 @@
 #!/bin/bash
 
-tail -n +2 ./dataset/ml-latest-medium/movies.csv | python3 mapper.py "$@" | sort | python3 reducer.py
-#tail -n +2 test.txt | python3 mapper.py "$@" | python3 reducer.py
+
+for arg do
+  shift
+  if [[ "$arg" == -N* ]]; then
+    NCount="$arg"
+    continue
+  fi
+  set -- "$@" "$arg"
+done
+
+tail -n +2 ./dataset/ml-latest-medium/movies.csv | python3 mapper.py "$@" | python3 reducer.py "$NCount"

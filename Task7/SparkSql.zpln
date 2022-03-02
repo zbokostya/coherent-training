@@ -1,0 +1,113 @@
+﻿{
+ "paragraphs": [
+  {
+   "user": "anonymous",
+   "config": {
+    "colWidth": 12,
+    "fontSize": 9,
+    "enabled": true,
+    "results": {},
+    "editorSetting": {
+     "language": "scala",
+     "editOnDblClick": false,
+     "completionKey": "TAB",
+     "completionSupport": true
+    },
+    "editorMode": "ace/mode/scala"
+   },
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "apps": [],
+   "jobName": "paragraph_1563110258183_1613653816",
+   "id": "20190714-161738_1950435706",
+   "dateCreated": "2019-07-14T16:17:38+0300",
+   "status": "READY",
+   "progressUpdateIntervalMs": 500,
+   "focus": true,
+   "$$hashKey": "object:394",
+   "text": "%pyspark\n\nsearch_genres = 'Comedy|Adventure'\nyear_from = 2000\nyear_to = 2010\nregexp = 'Life'\ntop_n = 3\n\n"
+  },
+  {
+   "text": "%pyspark\n\ndf_movies = spark.sql(\"SELECT _c0 as movie_id, _c1 as title, _c2 as genres FROM csv.`file:///zeppelin/seed/ml-latest-small/movies.csv`\")\ndf_movies.createOrReplaceTempView(\"movies\")\n\ndf_ratings = spark.sql(\"SELECT _c0 as user_id, _c1 as movie_id, _c2 as rating, _c3 as timestamp FROM csv.`file:///zeppelin/seed/ml-latest-small/ratings.csv`\")\ndf_ratings.createOrReplaceTempView(\"ratings\")",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-06T10:54:42+0000",
+   "progress": 100.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "SUCCESS",
+    "msg": []
+   },
+   "apps": [],
+   "runtimeInfos": {
+    "jobUrl": {
+     "propertyName": "jobUrl",
+     "label": "SPARK JOB",
+     "tooltip": "View in Spark web UI",
+     "group": "spark",
+     "values": [
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=350"
+      },
+      {
+       "jobUrl": "http://524806a63f1e:4040/jobs/job?id=351"
+      }
+     ],
+     "interpreterSettingId": "spark"
+    }
+   },
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620298482911_94335060",
+   "id": "paragraph_1620298482911_94335060",
+   "dateCreated": "2021-05-06T10:54:42+0000",
+   "dateStarted": "2021-05-06T10:54:43+0000",
+   "dateFinished": "2021-05-06T10:54:44+0000",
+   "status": "FINISHED"
+  },
+  {
+   "text": "%pyspark\n\nspark.sql(\"\"\"\nWITH\n    cte_split_genres AS (\n        SELECT explode(split('Comedy|Drama','[|]')) as genre\n    ),\n    cte_rating AS (\n        SELECT movie_id,\n               AVG(rating) AS avg_rat\n        FROM ratings\n        GROUP BY movie_id\n    ),\n    cte_year_title AS (\n        SELECT movie_id,\n               IF(locate('(', reverse(title)) != 0,\n                  reverse(trim(substring(reverse(title), LOCATE('(', REVERSE(title)) + 1))), title) as title,\n               IF(title REGEXP '\\\\([0-9]{4}\\\\)',\n                  SUBSTRING(regexp_extract(title, '\\\\([0-9]{4}\\\\)', 1), 2, 4),\n                  0)                                                                                as year\n        FROM movies\n    )\nSELECT cte_year_title.movie_id,\n       cte_year_title.title,\n       cte_year_title.year,\n       cte_split_genres.genre,\n       cte_rating.avg_rat\nFROM cte_split_genres\n         LEFT JOIN cte_rating\n                   ON cte_split_genres.movie_id = cte_rating.movie_id\n         LEFT JOIN cte_year_title\n                   ON cte_split_genres.movie_id = cte_year_title.movie_id\n\n\"\"\")\n\n",
+   "user": "anonymous",
+   "dateUpdated": "2021-05-06T10:54:45+0000",
+   "progress": 0.0,
+   "config": {},
+   "settings": {
+    "params": {},
+    "forms": {}
+   },
+   "results": {
+    "code": "ERROR",
+    "msg": [
+     {
+      "type": "TEXT",
+      "data": "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m\n\u001b[0;31mPy4JJavaError\u001b[0m                             Traceback (most recent call last)\n\u001b[0;32m~opt/zeppelin/interpreter/spark/pyspark/pyspark.zip/pyspark/sql/utils.py\u001b[0m in \u001b[0;36mdeco\u001b[0;34m(*a, **kw)\u001b[0m\n\u001b[1;32m     62\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 63\u001b[0;31m             \u001b[0;32mreturn\u001b[0m \u001b[0mf\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m*\u001b[0m\u001b[0ma\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m**\u001b[0m\u001b[0mkw\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     64\u001b[0m         \u001b[0;32mexcept\u001b[0m \u001b[0mpy4j\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mprotocol\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mPy4JJavaError\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0me\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;32m~opt/zeppelin/interpreter/spark/pyspark/py4j-0.10.7-src.zip/py4j/protocol.py\u001b[0m in \u001b[0;36mget_return_value\u001b[0;34m(answer, gateway_client, target_id, name)\u001b[0m\n\u001b[1;32m    327\u001b[0m                     \u001b[0;34m\"An error occurred while calling {0}{1}{2}.\\n\"\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 328\u001b[0;31m                     format(target_id, \".\", name), value)\n\u001b[0m\u001b[1;32m    329\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;31mPy4JJavaError\u001b[0m: An error occurred while calling o53.sql.\n: org.apache.spark.sql.AnalysisException: cannot resolve '`cte_split_genres.movie_id`' given input columns: [cte_split_genres.genre, cte_rating.movie_id, cte_rating.avg_rat]; line 28 pos 22;\n'Project ['cte_year_title.movie_id, 'cte_year_title.title, 'cte_year_title.year, 'cte_split_genres.genre, 'cte_rating.avg_rat]\n+- 'Join LeftOuter, ('cte_split_genres.movie_id = 'cte_year_title.movie_id)\n   :- 'Join LeftOuter, ('cte_split_genres.movie_id = movie_id#6303)\n   :  :- SubqueryAlias `cte_split_genres`\n   :  :  +- Project [genre#6328]\n   :  :     +- Generate explode(split(Comedy|Drama, [|])), false, [genre#6328]\n   :  :        +- OneRowRelation\n   :  +- SubqueryAlias `cte_rating`\n   :     +- Aggregate [movie_id#6303], [movie_id#6303, avg(cast(rating#6304 as double)) AS avg_rat#6325]\n   :        +- SubqueryAlias `ratings`\n   :           +- Project [_c0#6316 AS user_id#6302, _c1#6317 AS movie_id#6303, _c2#6318 AS rating#6304, _c3#6319 AS timestamp#6305]\n   :              +- Relation[_c0#6316,_c1#6317,_c2#6318,_c3#6319] csv\n   +- SubqueryAlias `cte_year_title`\n      +- Project [movie_id#6283, if (NOT (locate((, reverse(title#6284), 1) = 0)) reverse(trim(substring(reverse(title#6284), (locate((, reverse(title#6284), 1) + 1), 2147483647), None)) else title#6284 AS title#6326, if (title#6284 RLIKE ([0-9]{4})) substring(regexp_extract(title#6284, ([0-9]{4}), 1), 2, 4) else cast(0 as string) AS year#6327]\n         +- SubqueryAlias `movies`\n            +- Project [_c0#6296 AS movie_id#6283, _c1#6297 AS title#6284, _c2#6298 AS genres#6285]\n               +- Relation[_c0#6296,_c1#6297,_c2#6298] csv\n\n\tat org.apache.spark.sql.catalyst.analysis.package$AnalysisErrorAt.failAnalysis(package.scala:42)\n\tat org.apache.spark.sql.catalyst.analysis.CheckAnalysis$$anonfun$checkAnalysis$1$$anonfun$apply$3.applyOrElse(CheckAnalysis.scala:111)\n\tat org.apache.spark.sql.catalyst.analysis.CheckAnalysis$$anonfun$checkAnalysis$1$$anonfun$apply$3.applyOrElse(CheckAnalysis.scala:108)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$transformUp$1.apply(TreeNode.scala:280)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$transformUp$1.apply(TreeNode.scala:280)\n\tat org.apache.spark.sql.catalyst.trees.CurrentOrigin$.withOrigin(TreeNode.scala:69)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.transformUp(TreeNode.scala:279)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$3.apply(TreeNode.scala:277)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$3.apply(TreeNode.scala:277)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$4.apply(TreeNode.scala:328)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.mapProductIterator(TreeNode.scala:186)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.mapChildren(TreeNode.scala:326)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.transformUp(TreeNode.scala:277)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan$$anonfun$transformExpressionsUp$1.apply(QueryPlan.scala:93)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan$$anonfun$transformExpressionsUp$1.apply(QueryPlan.scala:93)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan$$anonfun$1.apply(QueryPlan.scala:105)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan$$anonfun$1.apply(QueryPlan.scala:105)\n\tat org.apache.spark.sql.catalyst.trees.CurrentOrigin$.withOrigin(TreeNode.scala:69)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan.transformExpression$1(QueryPlan.scala:104)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan.org$apache$spark$sql$catalyst$plans$QueryPlan$$recursiveTransform$1(QueryPlan.scala:116)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan.org$apache$spark$sql$catalyst$plans$QueryPlan$$recursiveTransform$1(QueryPlan.scala:117)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan$$anonfun$2.apply(QueryPlan.scala:126)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.mapProductIterator(TreeNode.scala:186)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan.mapExpressions(QueryPlan.scala:126)\n\tat org.apache.spark.sql.catalyst.plans.QueryPlan.transformExpressionsUp(QueryPlan.scala:93)\n\tat org.apache.spark.sql.catalyst.analysis.CheckAnalysis$$anonfun$checkAnalysis$1.apply(CheckAnalysis.scala:108)\n\tat org.apache.spark.sql.catalyst.analysis.CheckAnalysis$$anonfun$checkAnalysis$1.apply(CheckAnalysis.scala:86)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:126)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$foreachUp$1.apply(TreeNode.scala:125)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$foreachUp$1.apply(TreeNode.scala:125)\n\tat scala.collection.immutable.List.foreach(List.scala:392)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:125)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$foreachUp$1.apply(TreeNode.scala:125)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode$$anonfun$foreachUp$1.apply(TreeNode.scala:125)\n\tat scala.collection.immutable.List.foreach(List.scala:392)\n\tat org.apache.spark.sql.catalyst.trees.TreeNode.foreachUp(TreeNode.scala:125)\n\tat org.apache.spark.sql.catalyst.analysis.CheckAnalysis$class.checkAnalysis(CheckAnalysis.scala:86)\n\tat org.apache.spark.sql.catalyst.analysis.Analyzer.checkAnalysis(Analyzer.scala:95)\n\tat org.apache.spark.sql.catalyst.analysis.Analyzer$$anonfun$executeAndCheck$1.apply(Analyzer.scala:108)\n\tat org.apache.spark.sql.catalyst.analysis.Analyzer$$anonfun$executeAndCheck$1.apply(Analyzer.scala:105)\n\tat org.apache.spark.sql.catalyst.plans.logical.AnalysisHelper$.markInAnalyzer(AnalysisHelper.scala:201)\n\tat org.apache.spark.sql.catalyst.analysis.Analyzer.executeAndCheck(Analyzer.scala:105)\n\tat org.apache.spark.sql.execution.QueryExecution.analyzed$lzycompute(QueryExecution.scala:58)\n\tat org.apache.spark.sql.execution.QueryExecution.analyzed(QueryExecution.scala:56)\n\tat org.apache.spark.sql.execution.QueryExecution.assertAnalyzed(QueryExecution.scala:48)\n\tat org.apache.spark.sql.Dataset$.ofRows(Dataset.scala:78)\n\tat org.apache.spark.sql.SparkSession.sql(SparkSession.scala:642)\n\tat sun.reflect.GeneratedMethodAccessor116.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:498)\n\tat py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)\n\tat py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:357)\n\tat py4j.Gateway.invoke(Gateway.java:282)\n\tat py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)\n\tat py4j.commands.CallCommand.execute(CallCommand.java:79)\n\tat py4j.GatewayConnection.run(GatewayConnection.java:238)\n\tat java.lang.Thread.run(Thread.java:748)\n\n\nDuring handling of the above exception, another exception occurred:\n\n\u001b[0;31mAnalysisException\u001b[0m                         Traceback (most recent call last)\n\u001b[0;32m<ipython-input-1936-4b5ff2bc8a11>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     30\u001b[0m                    \u001b[0mON\u001b[0m \u001b[0mcte_split_genres\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmovie_id\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mcte_year_title\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmovie_id\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     31\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 32\u001b[0;31m \"\"\")\n\u001b[0m\u001b[1;32m     33\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;32m~opt/zeppelin/interpreter/spark/pyspark/pyspark.zip/pyspark/sql/session.py\u001b[0m in \u001b[0;36msql\u001b[0;34m(self, sqlQuery)\u001b[0m\n\u001b[1;32m    765\u001b[0m         \u001b[0;34m[\u001b[0m\u001b[0mRow\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mf1\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mf2\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34mu'row1'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mRow\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mf1\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m2\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mf2\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34mu'row2'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mRow\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mf1\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m3\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mf2\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34mu'row3'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    766\u001b[0m         \"\"\"\n\u001b[0;32m--> 767\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0mDataFrame\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_jsparkSession\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msql\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0msqlQuery\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_wrapped\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    768\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    769\u001b[0m     \u001b[0;34m@\u001b[0m\u001b[0msince\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m2.0\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;32m~opt/zeppelin/interpreter/spark/pyspark/py4j-0.10.7-src.zip/py4j/java_gateway.py\u001b[0m in \u001b[0;36m__call__\u001b[0;34m(self, *args)\u001b[0m\n\u001b[1;32m   1255\u001b[0m         \u001b[0manswer\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgateway_client\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msend_command\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcommand\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1256\u001b[0m         return_value = get_return_value(\n\u001b[0;32m-> 1257\u001b[0;31m             answer, self.gateway_client, self.target_id, self.name)\n\u001b[0m\u001b[1;32m   1258\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1259\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mtemp_arg\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mtemp_args\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;32m~opt/zeppelin/interpreter/spark/pyspark/pyspark.zip/pyspark/sql/utils.py\u001b[0m in \u001b[0;36mdeco\u001b[0;34m(*a, **kw)\u001b[0m\n\u001b[1;32m     67\u001b[0m                                              e.java_exception.getStackTrace()))\n\u001b[1;32m     68\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0ms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstartswith\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'org.apache.spark.sql.AnalysisException: '\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 69\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mAnalysisException\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0ms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msplit\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m': '\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstackTrace\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     70\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0ms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mstartswith\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'org.apache.spark.sql.catalyst.analysis'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     71\u001b[0m                 \u001b[0;32mraise\u001b[0m \u001b[0mAnalysisException\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0ms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msplit\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m': '\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstackTrace\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\n\u001b[0;31mAnalysisException\u001b[0m: \"cannot resolve '`cte_split_genres.movie_id`' given input columns: [cte_split_genres.genre, cte_rating.movie_id, cte_rating.avg_rat]; line 28 pos 22;\\n'Project ['cte_year_title.movie_id, 'cte_year_title.title, 'cte_year_title.year, 'cte_split_genres.genre, 'cte_rating.avg_rat]\\n+- 'Join LeftOuter, ('cte_split_genres.movie_id = 'cte_year_title.movie_id)\\n   :- 'Join LeftOuter, ('cte_split_genres.movie_id = movie_id#6303)\\n   :  :- SubqueryAlias `cte_split_genres`\\n   :  :  +- Project [genre#6328]\\n   :  :     +- Generate explode(split(Comedy|Drama, [|])), false, [genre#6328]\\n   :  :        +- OneRowRelation\\n   :  +- SubqueryAlias `cte_rating`\\n   :     +- Aggregate [movie_id#6303], [movie_id#6303, avg(cast(rating#6304 as double)) AS avg_rat#6325]\\n   :        +- SubqueryAlias `ratings`\\n   :           +- Project [_c0#6316 AS user_id#6302, _c1#6317 AS movie_id#6303, _c2#6318 AS rating#6304, _c3#6319 AS timestamp#6305]\\n   :              +- Relation[_c0#6316,_c1#6317,_c2#6318,_c3#6319] csv\\n   +- SubqueryAlias `cte_year_title`\\n      +- Project [movie_id#6283, if (NOT (locate((, reverse(title#6284), 1) = 0)) reverse(trim(substring(reverse(title#6284), (locate((, reverse(title#6284), 1) + 1), 2147483647), None)) else title#6284 AS title#6326, if (title#6284 RLIKE ([0-9]{4})) substring(regexp_extract(title#6284, ([0-9]{4}), 1), 2, 4) else cast(0 as string) AS year#6327]\\n         +- SubqueryAlias `movies`\\n            +- Project [_c0#6296 AS movie_id#6283, _c1#6297 AS title#6284, _c2#6298 AS genres#6285]\\n               +- Relation[_c0#6296,_c1#6297,_c2#6298] csv\\n\""
+     }
+    ]
+   },
+   "apps": [],
+   "runtimeInfos": {},
+   "progressUpdateIntervalMs": 500.0,
+   "jobName": "paragraph_1620298485411_1091135845",
+   "id": "paragraph_1620298485411_1091135845",
+   "dateCreated": "2021-05-06T10:54:45+0000",
+   "dateStarted": "2021-05-06T10:54:45+0000",
+   "dateFinished": "2021-05-06T10:54:46+0000",
+   "status": "ERROR"
+  }
+ ],
+ "name": "Zeppelin Notebook",
+ "id": "",
+ "noteParams": {},
+ "noteForms": {},
+ "angularObjects": {},
+ "config": {
+  "isZeppelinNotebookCronEnable": false,
+  "looknfeel": "default",
+  "personalizedMode": "false"
+ },
+ "info": {}
+}
